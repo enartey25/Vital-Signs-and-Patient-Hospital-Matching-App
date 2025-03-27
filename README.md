@@ -2,7 +2,7 @@ Vital Signs and Patient-Hospital Mapping Application
 
 In Ghana, hospital beds are sometimes filled to the brim, especially in the emergency ward of public hospitals. This means that patients who are brought in from far in ambulances are sometimes turned away since they cannot be accommodated, which sometimes leads to the unfortunate death of patients. 
 
-There should thus be a way for prospective patients and paramedics to be routed to hospitals based on proximity.
+There should thus be a way for prospective patients and paramedics to be routed to hospitals based on proximity and availability of resources.
 
 This project, however simple it may seem, aims to address the gap in communication between prospective patients, paramedics, and hospital staff concerning the availability of facilities.
 
