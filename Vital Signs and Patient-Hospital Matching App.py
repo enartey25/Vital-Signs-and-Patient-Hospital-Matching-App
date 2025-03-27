@@ -25,6 +25,7 @@ from time import sleep
 import os
 
 Builder.load_file('Vital Signs and Patient-Hospital Matching App.kv')
+Builder.load_file('style.kv')
 
 
 #These are HeFRA (Health Facilities Regulatory Agency) certified hospitals. Below are hospitals I am using to test-run the app.
@@ -83,59 +84,104 @@ options.add_argument("--disable-gpu")
 
 #Now, the application itself, built using Kivy as stated earlier
 
+
+
 class MainMenu(BoxLayout):
     def __init__(self, **kwargs):
         super(MainMenu, self).__init__(**kwargs)
         self.orientation = 'vertical'
-        self.size_hint = (1, 1)  # Make the layout bigger
+        self.spacing = 20
+        self.padding = [40, 20, 40, 20]
+        self.size_hint = (1, 1)
         self.pos_hint = {'center_x': 0.5, 'center_y': 0.5}
         Clock.schedule_once(self.themainmenu, 1)
 
     def themainmenu(self, instance):    
         self.clear_widgets()
-        self.image_widget = Image(source='Your Image Here', 
-                        allow_stretch=True, 
-                        keep_ratio=True, 
-                        size_hint=(None, None)
-                        )
-        self.add_widget(self.image_widget)
-        self.image_widget.pos_hint = {'center_x': 0.5, 'center_y': 0.5}
         
-        self.title_label = Label(text='Vital Signs App', font_size=48, font_name='Times', bold=True, color=(0, 0, 0, 1))
-        self.title_label.pos_hint = {'top': 1}  # Move the label to the top
-        self.title_label.size_hint = (1, 0.2)
-        self.add_widget(self.title_label)
+        # Main container
+        main_container = BoxLayout(orientation='vertical', spacing=30)
+        
+        # Header Section
+        header = BoxLayout(orientation='vertical', size_hint=(1, 0.3))
+        self.image_widget = Image(
+            source='assets/Ghana_Health_logo.png',  # Update with actual image path
+            allow_stretch=True,
+            keep_ratio=True,
+            size_hint=(0.99, 2),
+            size=(200, 200)
+        )
+        header.add_widget(self.image_widget)
+        
+        self.title_label = Label(
+            text='[b]Vital Signs App[/b]',
+            markup=True,
+            font_size='50sp',
+            font_name='Roboto',
+            color=(0.12, 0.46, 0.70, 1),  # Dark blue
+            size_hint=(1, 1),
+            height=60
+        )
+        header.add_widget(self.title_label)
+        main_container.add_widget(header)
 
+        # Button Container
+        button_container = GridLayout(
+            cols=1,
+            spacing=25,
+            size_hint=(0.8, 0.6),
+            pos_hint={'center_x': 0.5}
+        )
+        
+        # Custom Styled Buttons
+        menu_items = [
+            ('Record Vitals & Find A Hospital', self.collect_vitals),
+            ('Recall Vitals', self.recall_vital_signs),
+            ('Exit Application', self.exit_app)
+        ]
 
+        
+        for text, callback in menu_items:
+            btn = Button(
+                text=text,
+                font_size='24sp',
+                bold=True,
+                background_color=(0.12, 0.46, 0.70, 1),
+                background_normal='',
+                color=(1, 1, 1, 1),
+                size_hint=(1, 1),
+                height=80,
+                padding=(20, 10)
+            )
+            btn.bind(on_press=callback)
+            button_container.add_widget(btn)
 
-        self.option1_button = Button(text='Vital signs recording and referral to hospital', size_hint_y=0.2, size_hint_x=0.5)  # Make the button smaller
-        self.option1_button.bind(on_press=self.collect_vitals)
-        self.option1_button.pos_hint = {'center_x': 0.5, 'center_y': 0.5}  # Center the button
-        self.option1_button.size_hint = (0.4, 0.1)
-        self.add_widget(self.option1_button)  # Add the button to the layout
+        main_container.add_widget(button_container)
+        
+        # Footer Section
+        footer = Label(
+            text='[i]Medical Assistance System[/i]',
+            markup=True,
+            font_size='20sp',
+            color=(0.4, 0.4, 0.4, 1),
+            size_hint=(1, 0.1),
+            height=5 
+        )
+        main_container.add_widget(footer)
 
-        # Add a spacer to separate the buttons
-        spacer = Widget(size_hint_y=0.02)
-        self.add_widget(spacer)
+        footer = Label(
+            text='[i]© 2025. Built by Ethan Nartey. Designed by King-Frederick Akyea[/i]',
+            markup=True,
+            font_size='18sp',
+            color=(0.4, 0.4, 0.4, 1),
+            size_hint=(1, None),
+            height=10 
+        )
+        main_container.add_widget(footer)
 
-        self.option2_button = Button(text='Vital signs recall', size_hint_y=0.2, size_hint_x=0.5)  # Make the button smaller
-        self.option2_button.bind(on_press=self.recall_vital_signs)
-        self.option2_button.pos_hint = {'center_x': 0.5, 'center_y': 0.5}  # Center the button
-        self.option2_button.size_hint = (0.4, 0.1)
-        self.add_widget(self.option2_button)  # Add the button to the layout
+        self.add_widget(main_container)
+        
 
-        # Add a spacer to separate the buttons
-        spacer = Widget(size_hint_y=0.02)
-        self.add_widget(spacer)
-
-        self.option3_button = Button(text='Exit application', size_hint_y=0.2, size_hint_x=0.5)  # Make the button smaller
-        self.option3_button.bind(on_press=self.exit_app)
-        self.option3_button.pos_hint = {'center_x': 0.5, 'center_y': 0.5}  # Center the button
-        self.option3_button.size_hint = (0.4, 0.1)
-        self.add_widget(self.option3_button)  # Add the button to the layout
-
-        spacer = Widget(size_hint_y=0.03)
-        self.add_widget(spacer)
 
     def collect_vitals(self, instance):
         self.clear_widgets()
@@ -145,22 +191,26 @@ class MainMenu(BoxLayout):
 
         
         # Add some empty space at the top
-        self.image_widget = Image(source='Your Image Here', 
+        self.image_widget = Image(source='assets/Ghana_Health_logo.png', 
                         allow_stretch=True, 
                         keep_ratio=True, 
-                        size_hint=(None, None)
+                        size_hint=(1, 1)
                         )
         layout.add_widget(self.image_widget)
         self.image_widget.pos_hint = {'center_x': 0.5, 'center_y': 0.5}
-                
-        self.patient_name_input = TextInput(multiline=False, hint_text='Patient Name', font_size=18)
+        
+        self.vitals = Label(text="Patient's Details", font_size=64, font_name='Roboto', bold=True, color=(0.12, 0.46, 0.70, 1))
+        self.vitals.size_hint = (1, 0.8)
+        layout.add_widget(self.vitals)
+
+        self.patient_name_input = TextInput(multiline=False, hint_text='Enter Your Name', font_size=25)
         self.patient_name_input.pos_hint = {'center_x': 0.5, 'center_y': 0.5}  # Center the button
-        self.patient_name_input.size_hint = (0.4, 0.4)
+        self.patient_name_input.size_hint = (0.5, 0.5)
+        self.patient_name_input.font_size = 25
+        self.patient_name_input.height = 100
         layout.add_widget(self.patient_name_input)
 
-        self.vitals = Label(text="Patient's vitals", font_size=48, font_name='Times', bold=True, color=(0, 0, 0, 1))
-        self.vitals.size_hint = (1, 0.2)
-        layout.add_widget(self.vitals)
+
 
         spacer = Widget(size_hint_y=0.01)
         self.add_widget(spacer)
@@ -171,28 +221,28 @@ class MainMenu(BoxLayout):
         left_middle_layout = BoxLayout(orientation='vertical', spacing=10)
         middle_layout.add_widget(left_middle_layout)
 
-        self.bp_input = TextInput(multiline=False, hint_text='Blood Pressure', font_size=18, size_hint=(1, 0.5))
+        self.bp_input = TextInput(multiline=False, hint_text='Blood Pressure', font_size=25, size_hint=(1, 0.5))
         left_middle_layout.add_widget(self.bp_input)
 
-        self.temperature_input = TextInput(multiline=False, hint_text='Temperature', font_size=18, size_hint=(1, 0.5))
+        self.temperature_input = TextInput(multiline=False, hint_text='Temperature', font_size=25, size_hint=(1, 0.5))
         left_middle_layout.add_widget(self.temperature_input)
 
-        self.pulse_rate_input = TextInput(multiline=False, hint_text='Pulse Rate', font_size=18, size_hint=(1, 0.5))
+        self.pulse_rate_input = TextInput(multiline=False, hint_text='Pulse Rate', font_size=25, size_hint=(1, 0.5))
         left_middle_layout.add_widget(self.pulse_rate_input)
 
         right_middle_layout = BoxLayout(orientation='vertical', spacing=10)
         middle_layout.add_widget(right_middle_layout)
 
-        self.oxygen_sat_input = TextInput(multiline=False, hint_text='Oxygen Saturation', font_size=18, size_hint=(1, 0.5))
+        self.oxygen_sat_input = TextInput(multiline=False, hint_text='Oxygen Saturation', font_size=25, size_hint=(1, 0.5))
         right_middle_layout.add_widget(self.oxygen_sat_input)
 
-        self.respiratory_rate_input = TextInput(multiline=False, hint_text='Respiratory Rate', font_size=18, size_hint=(1, 0.5))
+        self.respiratory_rate_input = TextInput(multiline=False, hint_text='Respiratory Rate', font_size=25, size_hint=(1, 0.5))
         right_middle_layout.add_widget(self.respiratory_rate_input)
 
         spacer = Widget(size_hint_y=0.09)
         self.add_widget(spacer)      
 
-        self.summary_input = TextInput(multiline=True, hint_text='Summary', font_size=18, )
+        self.summary_input = TextInput(multiline=True, hint_text='Additional Information', font_size=30, )
         self.summary_input.pos_hint = {'top': 1, 'left': 0.5, 'center_x': 0.5}
         self.summary_input.size_hint = (0.5, 0.8)
         layout.add_widget(self.summary_input)
@@ -203,14 +253,14 @@ class MainMenu(BoxLayout):
         left_bottom_layout = BoxLayout(orientation='vertical', spacing=10)
         bottom_layout.add_widget(left_bottom_layout)
 
-        self.back_button = Button(text='Back', size_hint=(0.4, 0.01), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        self.back_button = Button(text='Main Menu', size_hint=(0.4, None), pos_hint={'center_x': 0.5, 'center_y': 0.5}, background_color=(0.12, 0.46, 0.70, 1))
         self.back_button.bind(on_press=self.themainmenu)
         left_bottom_layout.add_widget(self.back_button)
 
         right_bottom_layout = BoxLayout(orientation='vertical', spacing=10)
         bottom_layout.add_widget(right_bottom_layout)
 
-        self.submit_button = Button(text='Submit', size_hint=(0.4, 0.01), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        self.submit_button = Button(text='Find a Hospital', size_hint=(0.4, None), pos_hint={'center_x': 0.5, 'center_y': 0.5}, background_color=(0.12, 0.46, 0.70, 1))
         self.submit_button.bind(on_press=self.find_location)
         right_bottom_layout.add_widget(self.submit_button)
 
@@ -239,22 +289,22 @@ class MainMenu(BoxLayout):
         layout = BoxLayout(orientation='vertical', spacing=30)
         self.add_widget(layout)
 
-        self.image_widget = Image(source='Your Image Here', 
+        self.image_widget = Image(source='assets/Ghana_Health_logo.png', 
                         allow_stretch=True, 
                         keep_ratio=True, 
-                        size_hint=(None, None)
+                        size_hint=(0.5, 0.5)
                         )
         layout.add_widget(self.image_widget)
         self.image_widget.pos_hint = {'center_x': 0.5, 'center_y': 0.5}
 
-        label = Label(text='Enter your current location:', font_name='Times', bold=True, color=(0, 0, 0, 1), font_size=48)
-        label.size_hint = (1, 0.02)  # Make the label smaller
+        label = Label(text='Your Location:', font_name='Roboto', bold=True, color=(0.12, 0.46, 0.70, 1), font_size=64)
+        label.size_hint = (1, None)  # Make the label smaller
         layout.add_widget(label)
 
-        self.location_input = TextInput(multiline=False, hint_text='Location', size_hint=(0.3, 0.01), pos_hint={'center_x': 0.5, 'center_y': 0.9})
+        self.location_input = TextInput(multiline=False, hint_text='Enter Your Current Location', size_hint=(0.3, None), pos_hint={'center_x': 0.5, 'center_y': 0.9}, font_size=25)
         layout.add_widget(self.location_input)
 
-        self.get_hospital_button = Button(text='Get Hospital', size_hint=(0.3, 0.01), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        self.get_hospital_button = Button(text='Find a Hospital', size_hint=(0.3, None), pos_hint={'center_x': 0.5, 'center_y': 0.5}, background_color=(0.12, 0.46, 0.70, 1))
         layout.add_widget(self.get_hospital_button)  # Add the button to the layout
         self.get_hospital_button.bind(on_press=self.display_message)
     
@@ -266,22 +316,43 @@ class MainMenu(BoxLayout):
         layout = BoxLayout(orientation='vertical', spacing=30)
         self.add_widget(layout)
 
-        self.image_widget = Image(source='Your Image Here', 
+        self.image_widget = Image(source='assets/Ghana_Health_logo.png', 
                 allow_stretch=True, 
                 keep_ratio=True, 
-                size_hint=(None, None)
+                size_hint=(0.5, 0.5)
                 )
         layout.add_widget(self.image_widget)
         self.image_widget.pos_hint = {'center_x': 0.5, 'center_y': 0.5}
-        label = Label(text='''An attempt has been made to link you to the nearest HeFRA certified hospital.
-If successful, your data will be sent to the hospital.
-A Google Maps webpage will open to show you the fastest route.
-This page will be redirected to the start menu soon.''', 
-                      font_name='Times', bold=True, 
-                      color=(0, 0, 0, 1), 
-                      font_size=30)
-        layout.add_widget(label)
-        Clock.schedule_once(self.get_location, 1)
+        label1 = Label(text='''You are being linked to the nearest HeFRA certified hospital. 
+Please wait....''', 
+                   font_name='Roboto', bold=True, 
+                   color=(0, 0, 0, 1), 
+                   font_size=35)
+        layout.add_widget(label1)
+        
+        def show_second_message(dt):
+            layout.remove_widget(label1)
+            label2 = Label(text='''Linked Successfully! 
+Your data is being sent to the hospital. Please wait....''', 
+                   font_name='Roboto', bold=True, 
+                   color=(0, 0, 0, 1), 
+                   font_size=35)
+            layout.add_widget(label2)
+            
+            def show_third_message(dt):
+                layout.remove_widget(label2)
+                label3 = Label(text='''Data Sent Successfully! 
+A Google Maps webpage will open to show you the fastest route. Please wait.... 
+Get well soon!''', 
+                           font_name='Roboto', bold=True, 
+                           color=(0, 0, 0, 1), 
+                           font_size=35)
+                layout.add_widget(label3)
+                Clock.schedule_once(self.get_location, 3)
+            
+            Clock.schedule_once(show_third_message, 3)
+        
+        Clock.schedule_once(show_second_message, 3)
     
     def get_location(self, instance):
         current_location_name = self.location_input.text
@@ -301,11 +372,11 @@ This page will be redirected to the start menu soon.''',
             label = Label(text='''Location not found
 You are being redirected to the main menu
 Please wait.......''', 
-                      font_name='Times', bold=True, 
+                      font_name='Roboto', bold=True, 
                       color=(0, 0, 0, 1), 
                       font_size=30)
             layout.add_widget(label)
-            Clock.schedule_once(self.themainmenu, 2)
+            Clock.schedule_once(self.themainmenu, 3)
         else:
             # Variables for the ideal hospital
             ideal_hospital = None
@@ -400,10 +471,10 @@ Please wait.......''',
         )
         layout.add_widget(self.image_widget)
         self.image_widget.pos_hint = {'center_x': 0.5, 'center_y': 0.5}
-        self.title_label = Label(text='Patient Name', font_size=48, font_name='Times', bold=True, color=(0, 0, 0, 1))
+        self.title_label = Label(text='Patient Name', font_size=64, font_name='Roboto', bold=True, color=(0.12, 0.46, 0.70, 1))
         self.title_label.size_hint = (1, 0.4)
         layout.add_widget(self.title_label)
-        self.patient_name_input = TextInput(multiline=False, hint_text='Patient Name', size_hint=(0.3, 0.3), pos_hint={'center_x': 0.5, 'center_y': 0.9})
+        self.patient_name_input = TextInput(multiline=False, hint_text='Enter Your Name', size_hint=(0.3, 0.3), pos_hint={'center_x': 0.5, 'center_y': 0.9})
         layout.add_widget(self.patient_name_input)
         
         bottom_layout = GridLayout(cols=2, spacing=1)
@@ -412,14 +483,14 @@ Please wait.......''',
         left_bottom_layout = BoxLayout(orientation='vertical', spacing=10)
         bottom_layout.add_widget(left_bottom_layout)
 
-        self.back_button = Button(text='Back', size_hint=(0.35, 0.01), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        self.back_button = Button(text='Main Menu', size_hint=(0.35, None), pos_hint={'center_x': 0.5, 'center_y': 0.5}, background_color=(0.12, 0.46, 0.70, 1))
         self.back_button.bind(on_press=self.themainmenu)
         left_bottom_layout.add_widget(self.back_button)
 
         right_bottom_layout = BoxLayout(orientation='vertical', spacing=10)
         bottom_layout.add_widget(right_bottom_layout)
 
-        self.fetch_button = Button(text='Fetch Vitals', size_hint=(0.35, 0.01), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        self.fetch_button = Button(text='Get Vitals', size_hint=(0.35, None), pos_hint={'center_x': 0.5, 'center_y': 0.5}, background_color=(0.12, 0.46, 0.70, 1))
         self.fetch_button.bind(on_press=self.get_patient_name)
         right_bottom_layout.add_widget(self.fetch_button)
 
@@ -440,23 +511,23 @@ Please wait.......''',
             self.clear_widgets()
             label = Label(text='''File not found.
     Redirecting to main menu''', 
-                        font_name='Times', bold=True, 
+                        font_name='Roboto', bold=True, 
                         color=(0, 0, 0, 1), 
                         font_size=30, 
                         pos_hint={'center_x': 0.5, 'center_y': 0.5})
             layout.add_widget(label)
-            Clock.schedule_once(self.themainmenu, 2)
+            Clock.schedule_once(self.themainmenu, 3)
         except Exception as e:
             self.clear_widgets()
             label = Label(text='''An error occured.
     Redirecting to main menu''', 
-                        font_name='Times', bold=True, 
+                        font_name='Roboto', bold=True, 
                         color=(0, 0, 0, 1), 
                         font_size=30, 
                         pos_hint={'center_x': 0.5, 'center_y': 0.5})
             layout.add_widget(label)
-            Clock.schedule_once(self.themainmenu, 2)
-        Clock.schedule_once(self.themainmenu, 2)
+            Clock.schedule_once(self.themainmenu, 3)
+        Clock.schedule_once(self.themainmenu, 3)
 
     def exit_app(self, instance):
         App.get_running_app().stop()
