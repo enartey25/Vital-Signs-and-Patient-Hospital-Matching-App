@@ -40,6 +40,8 @@ I was unable to get the Google Maps API to work. Hence,  I worked around it and 
 
 So far, all test cases have been run locally on a laptop, and not on a mobile device. Therefore, I recommend that the application be tested on a mobile device.
 
+Data from HeFRA could be converted into the CSV format. The Pandas Library could then be used to sort out this data, thus eliminating the need for a list.
+
 A decentralized database system could be integrated into the application to store the patient data, instead of using Google Forms to send the data to the respective hospitals. The patient would reserve the right to grant access to any health facility that would like to access their records.
 
 A system linked to the hospital’s management records could be introduced to provide real-time updates to availability of beds.
